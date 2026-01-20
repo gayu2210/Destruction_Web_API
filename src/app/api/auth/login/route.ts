@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse JSON with error handling ggg
+    // Parse JSON with error handling
     let body;
     try {
       body = await request.json();

@@ -1,10 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, ClipboardList, Calendar, Clock, CheckCircle, FileText } from "lucide-react";
 
 const statusConfig = {
@@ -32,8 +28,8 @@ export default function CustomerRequests() {
   ];
 
   // Mock data based on selected customer
-  const getRequestsForCustomer = (customerId) => {
-    const allRequests = {
+  const getRequestsForCustomer = (customerId: string) => {
+    const allRequests: Record<string, any[]> = {
       '1': [
         {
           id: '1',
@@ -76,19 +72,18 @@ export default function CustomerRequests() {
     return (
       <div className="min-h-screen bg-slate-50 p-8">
         <div className="max-w-4xl mx-auto">
-          <Button 
-            variant="ghost" 
+          <button 
+            className="mb-6 px-4 py-2 text-slate-600 hover:text-slate-900"
             onClick={() => setShowForm(false)}
-            className="mb-6"
           >
             ← Back to Requests
-          </Button>
+          </button>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>New Service Request</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
+            <div className="p-6 border-b border-slate-200">
+              <h2 className="text-xl font-semibold">New Service Request</h2>
+            </div>
+            <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Service Type</label>
                 <select className="w-full p-2 border border-slate-300 rounded-lg">
@@ -116,15 +111,15 @@ export default function CustomerRequests() {
               </div>
               
               <div className="flex gap-4">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
                   Submit Request
-                </Button>
-                <Button variant="outline" onClick={() => setShowForm(false)}>
+                </button>
+                <button className="px-4 py-2 border border-slate-300 rounded" onClick={() => setShowForm(false)}>
                   Cancel
-                </Button>
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -137,18 +132,18 @@ export default function CustomerRequests() {
         {user?.role === 'admin' && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
             <p className="text-sm font-medium text-amber-900 mb-2">Admin Preview Mode</p>
-            <Select value={selectedCustomerId || ''} onValueChange={setSelectedCustomerId}>
-              <SelectTrigger className="w-full md:w-96 bg-white">
-                <SelectValue placeholder="Select customer to preview" />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map(c => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.legal_company_name || c.display_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select 
+              value={selectedCustomerId || ''} 
+              onChange={(e) => setSelectedCustomerId(e.target.value)}
+              className="w-full md:w-96 bg-white p-2 border border-slate-300 rounded"
+            >
+              <option value="">Select customer to preview</option>
+              {customers.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.legal_company_name || c.display_name}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
@@ -163,20 +158,20 @@ export default function CustomerRequests() {
               </p>
             )}
           </div>
-          <Button 
+          <button 
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 gap-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Request
-          </Button>
+          </button>
         </div>
 
         {/* Requests List */}
         <div className="space-y-4">
           {requests.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
+              <div className="p-12 text-center">
                 <ClipboardList className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-slate-900 mb-2">No Service Requests</h3>
                 <p className="text-slate-600 mb-6">
@@ -185,32 +180,32 @@ export default function CustomerRequests() {
                     : 'You haven\'t submitted any service requests yet.'
                   }
                 </p>
-                <Button 
+                <button 
                   onClick={() => setShowForm(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
                 >
                   Create Your First Request
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           ) : (
             requests.map((request) => {
-              const config = statusConfig[request.request_status] || statusConfig.pending;
+              const config = statusConfig[request.request_status as keyof typeof statusConfig] || statusConfig.pending;
               const Icon = config.icon;
               
               return (
-                <Card key={request.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                <div key={request.id} className="bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-slate-900">
                             #{request.request_number}
                           </h3>
-                          <Badge className={config.className}>
-                            <Icon className="w-3 h-3 mr-1" />
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${config.className}`}>
+                            <Icon className="w-3 h-3 mr-1 inline" />
                             {config.label}
-                          </Badge>
+                          </span>
                         </div>
                         
                         <p className="text-slate-600 mb-2 capitalize">
@@ -236,18 +231,18 @@ export default function CustomerRequests() {
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <button className="px-3 py-1 border border-slate-300 rounded text-sm">
                           View Details
-                        </Button>
+                        </button>
                         {request.request_status === 'draft' && (
-                          <Button variant="outline" size="sm">
+                          <button className="px-3 py-1 border border-slate-300 rounded text-sm">
                             Edit
-                          </Button>
+                          </button>
                         )}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })
           )}

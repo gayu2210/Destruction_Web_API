@@ -3,12 +3,13 @@ import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 // GET - Get single customer request
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const db = await connectDB();
     const requests = db.collection('customer_requests');
     
-    const customerRequest = await requests.findOne({ _id: new ObjectId(params.id) });
+    const customerRequest = await requests.findOne({ _id: new ObjectId(id) });
     
     if (!customerRequest) {
       return NextResponse.json(
@@ -30,8 +31,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT - Update customer request
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     
     const db = await connectDB();
@@ -43,7 +45,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     };
     
     const result = await requests.updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       { $set: updateData }
     );
     
@@ -67,12 +69,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE - Delete customer request
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const db = await connectDB();
     const requests = db.collection('customer_requests');
     
-    const result = await requests.deleteOne({ _id: new ObjectId(params.id) });
+    const result = await requests.deleteOne({ _id: new ObjectId(id) });
     
     if (result.deletedCount === 0) {
       return NextResponse.json(
