@@ -4,7 +4,7 @@ import Estimate from '@/models/Estimate';
 
 export async function GET() {
   try {
-    await connectDB();
+    await connectDB(); 
     const estimates = await Estimate.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: estimates });
   } catch (error) {
